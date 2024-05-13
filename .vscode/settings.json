@@ -1,0 +1,23 @@
+{
+  "editor.defaultFormatter": "rust-lang.rust-analyzer",
+  "editor.formatOnSave": true,
+  "editor.rulers": [100],
+
+  "editor.codeLens": true,
+  // "errorLens.enabled": false,
+  "editor.inlayHints.enabled": "offUnlessPressed",
+  // ^ "Pressed" means ctrl-alt
+  // options: on | off | offUnlessPressed | onUnlessPressed
+
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml",
+    "editor.formatOnSave": true,
+    "editor.rulers": [100]
+  },
+  "evenBetterToml.formatter.allowedBlankLines": 1,
+  "evenBetterToml.formatter.columnWidth": 120,
+  "evenBetterToml.formatter.alignComments": true,
+  "evenBetterToml.formatter.alignEntries": true,
+  "evenBetterToml.formatter.arrayAutoExpand": true,
+  "evenBetterToml.formatter.arrayTrailingComma": true
+}

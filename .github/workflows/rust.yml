@@ -1,0 +1,100 @@
+# DEV NOTES
+# run locally with: https://github.com/nektos/act
+# act --container-architecture linux/amd64 --dryrun [-n]
+# ^ to check syntax
+# act --container-architecture linux/amd64 [--quiet]
+
+# NOTES
+# https://docs.github.com/en/billing/managing-billing-for-github-actions/about-billing-for-github-actions
+
+# Now you can use act to run the actions locally!
+
+# act                               # run the entire pipeline (default: `push` event)
+# act -l                            # view the execution graph
+# act -j verify                     # run the verify job
+
+name: Rust - Build & Test
+
+# See the docs at https://docs.github.com/en/actions
+
+on:
+  push:
+    branches: ["main", "dev"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INSTALLED: unknown
+
+  BRANCH_MAIN: ${{ github.ref == 'refs/heads/main' }}
+  BRANCH_NON_MAIN: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # ubuntu2404 macos-14-arm64
+    # ^ https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md
+    # For full list of runners, see
+    # https://github.com/actions/runner-images/tree/main/images/ubuntu
+    # https://github.com/actions/runner-images/tree/main/images/macos
+    # https://github.com/actions/runner-images/tree/main/images/win
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+
+    steps:
+
+      - name: Get cargo installation status
+        run: |
+          echo "CARGO_INSTALLED=$(type cargo > /dev/null && echo 'true' || echo 'false')" >> $GITHUB_ENV
+
+      - name: Ensure latest Rust toolchain
+        if: ${{ env.CARGO_INSTALLED == 'true' }}
+        run: |
+          rustup update stable
+
+      - name: Install latest Rust toolchain # required for act (local) image
+        if: ${{ env.CARGO_INSTALLED != 'true' }}
+        uses: dtolnay/rust-toolchain@stable
+        # see https://github.com/dtolnay/rust-toolchain
+        with:
+          toolchain: stable
+          # profile: minimal
+          components: rustfmt, clippy
+
+      - name: Environment check
+        run: |
+          echo "Platform details = $(uname -a && lsb_release -a)"
+          echo "BRANCH_MAIN = ${{ env.BRANCH_MAIN }}"
+          echo "BRANCH_NON_MAIN = ${{ env.BRANCH_NON_MAIN }}"
+          echo "$(cargo --version)"
+          echo "$(cargo clippy --version)"
+          echo "$(rustc --version)"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        # see https://github.com/marketplace/actions/checkout
+        with:
+          submodules: true
+          # fetch-depth: 0            # Default:1, 0 = Fetch all history for .GitInfo and .Lastmod
+
+      - name: Compile
+        run: |
+          cargo check
+
+      - name: Check formatting using Clippy
+        run: |
+          cargo clippy --no-deps
+
+      - name: Build
+        run: |
+          cargo build
+
+      - name: Test
+        run: |
+          cargo test
+
+      - name: Build Release
+        if: ${{ env.BRANCH_MAIN == 'true' }}
+        run: |
+          cargo build --release

@@ -1,0 +1,49 @@
+[package]
+name        = "rust-base"
+version     = "0.1.0"
+edition     = "2021"
+description = "TODO: Add description"
+repository  = "TODO: Add repo url"
+readme      = "README.md"
+license     = "TODO: Add license"
+keywords    = ["TODO: Add", "keywords"]
+categories  = ["TODO: Add", "categories"]
+# default-run = "a_name_here"
+# ^ default-run is only required if additional (custom) binaries are employed
+
+# add any custom binary details if required, e.g.
+# [[bin]]
+# name = "my-entrypoint"
+# path = "src/entrypoint.rs"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+# linting options
+# forbid | deny | warn | allow
+[lints.rust]
+unsafe_code = "warn"
+
+# https://doc.rust-lang.org/clippy/lints.html
+[lints.clippy]
+cargo         = { level = "deny", priority = -1 }
+nursery       = { level = "deny", priority = -1 }
+pedantic      = { level = "deny", priority = -1 }
+enum_glob_use = "deny"
+unwrap_used   = "deny"
+
+[profile.release]
+# See: https://github.com/johnthagen/min-sized-rust
+opt-level     = 'z'       # Optimize for size.
+lto           = true      # Enable Link Time Optimisation
+codegen-units = 1         # Reduced to increase optimisations.
+panic         = 'abort'   # Abort on panic
+strip         = "symbols" # Strip symbols from binary
+
+# upgrade to current versions using...
+# cargo upgrade -i allow && cargo update
+[dependencies]
+thiserror = "1"
+# tokio     = { version = "1", features = ["full"] }
+
+[dev-dependencies]
+# anyhow = "1"

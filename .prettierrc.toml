@@ -1,0 +1,30 @@
+quoteProps = "consistent"
+
+[[overrides]]
+files = ["*.md"]
+
+[overrides.options]
+tabWidth = 4
+
+[overrides.options.list]
+indentationSize = 4
+
+[[overrides]]
+files = ["*.yml", "*.yaml"]
+
+[overrides.options]
+tabWidth = 2
+
+[[overrides]]
+files = ["*.json", "*.js", "*.jsx", "*.cjs"]
+
+[overrides.options]
+tabWidth           = 2
+useTabs            = false
+semi               = false
+singleQuote        = false
+arrowParens        = "avoid"
+trailingComma      = "none"
+bracketSpacing     = true
+jsxBracketSameLine = false
+fluid              = false
